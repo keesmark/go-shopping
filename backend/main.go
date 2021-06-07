@@ -3,23 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-shopping/db"
+	"go-shopping/models"
 	"net/http"
-	"time"
 )
 
-type Todo struct {
-	Id        int    `form:"id"`
-	InCharge  string `form:"inCharge"`
-	Content   string `form:"content"`
-	Status    int    `form:"status"`
-	CreatedAt time.Time
-}
-
-func (t *Todo) CreatedAtS() string {
-	return t.CreatedAt.Format("2006-01-02")
-}
-
-var todos []Todo
+var todos []models.Todo
 var maxId int = 0
 
 func increment() int {
@@ -28,13 +17,12 @@ func increment() int {
 }
 
 func GetTodoData(c *gin.Context) {
-	var b Todo
+	var b models.Todo
 	if err := c.Bind(&b); err != nil {
 		fmt.Errorf("%#v", err)
 	}
 	b.Id = increment()
 	b.Status = 0
-	b.CreatedAt = time.Now()
 
 	todos = append(todos, b)
 	c.HTML(http.StatusOK, "index.html", map[string]interface{}{
@@ -43,7 +31,7 @@ func GetTodoData(c *gin.Context) {
 }
 
 func GetDoneTodoData(c *gin.Context) {
-	var b Todo
+	var b models.Todo
 	if err := c.Bind(&b); err != nil {
 		fmt.Errorf("%#v", err)
 	}
@@ -66,31 +54,28 @@ func GetDoneTodoData(c *gin.Context) {
 }
 
 func main() {
-	fmt.Println("sss")
 	r := gin.Default()
 	r.LoadHTMLFiles("./template/index.html")
+	db.Init()
 
-	todos = []Todo{
-		Todo{
-			Id:        increment(),
-			InCharge:  "Lea",
-			Content:   "cook",
-			Status:    0,
-			CreatedAt: time.Now(),
+	todos = []models.Todo{
+		models.Todo{
+			Id:       increment(),
+			InCharge: "Lea",
+			Content:  "cook",
+			Status:   0,
 		},
-		Todo{
-			Id:        increment(),
-			InCharge:  "Koro",
-			Content:   "play",
-			Status:    1,
-			CreatedAt: time.Now(),
+		models.Todo{
+			Id:       increment(),
+			InCharge: "Koro",
+			Content:  "play",
+			Status:   1,
 		},
-		Todo{
-			Id:        increment(),
-			InCharge:  "Lea",
-			Content:   "sleep",
-			Status:    0,
-			CreatedAt: time.Now(),
+		models.Todo{
+			Id:       increment(),
+			InCharge: "Lea",
+			Content:  "sleep",
+			Status:   0,
 		},
 	}
 
@@ -109,4 +94,5 @@ func main() {
 	r.GET("/post-todo", GetTodoData)
 	r.GET("/done", GetDoneTodoData)
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	db.Close()
 }
