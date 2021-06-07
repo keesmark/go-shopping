@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: ./backend
+    ports:
+      - 8080:8080
+    tty:
+      true
+    volumes:
+      - ./backend:/app
+
+  db:
+    container_name: db
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: go
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - "./mysql:/var/lib/mysql"
+    ports:
+      - "3306:3306"

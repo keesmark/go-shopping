@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/post-todo">
+    <label for="content">内容</label>
+    <input id="content" type="text" name="content">
+    <label for="inCharge">担当</label>
+    <input type="text" name="inCharge" id="inCharge">
+    <input type="submit" value="送信">
+</form>
+<ul>
+    {{ range .todos}}
+    <li>
+        ID : {{.Id}}
+        担当：{{.InCharge}}
+        内容: {{.Content}}
+        ステータス:
+        <form action="/done">
+            <input type="hidden" name="id" value="{{.Id}}">
+            <input type="hidden" name="status" value="{{.Status}}">
+            {{ if eq .Status 0 }}
+            未着手 <input type="submit" value="Done">
+            {{else}}
+            着手済み
+            <input type="submit" value="restore">
+            {{end}}
+        </form>
+        作成日: {{.CreatedAtS}}
+    </li>
+    {{end}}
+</ul>
+</body>
+</html>
