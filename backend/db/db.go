@@ -12,9 +12,8 @@ var (
 )
 
 func Init() {
-	db := gormConnect()
-	defer db.Close()
-	db.AutoMigrate(&models.Todo{})
+	db = gormConnect()
+	autoMigration()
 }
 
 func GetDB() *gorm.DB {
@@ -40,4 +39,8 @@ func gormConnect() *gorm.DB {
 		panic(err.Error())
 	}
 	return db
+}
+
+func autoMigration() {
+	db.AutoMigrate(&models.Todo{})
 }

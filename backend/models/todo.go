@@ -1,7 +1,7 @@
 package models
 
 type Todo struct {
-	Id       int
+	Id       int    `form:"id"`
 	InCharge string `form:"inCharge"`
 	Content  string `form:"content"`
 	Status   int    `form:"status"`
