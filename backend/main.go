@@ -18,35 +18,25 @@ func CreateTodoData(c *gin.Context) {
 
 	fmt.Println(todo)
 	database := db.GetDB()
-	//defer database.Close()
 	database.Create(&todo)
 
-	todos := getAllTodos()
-	c.HTML(http.StatusOK, "index.html", map[string]interface{}{
-		"todos": todos,
-	})
+	c.Redirect(http.StatusSeeOther, "/todo")
 }
 
 func UpdateDoneTodoData(c *gin.Context) {
 	var todo models.Todo
-	if err := c.Bind(&todo); err != nil {
-		fmt.Errorf("%#v", err)
-	}
-
+	id := c.Param("Id")
 	database := db.GetDB()
-	result := database.First(&todo, todo.Id)
-	fmt.Println(result)
+	database.Find(&todo, id)
+
 	if todo.Status == 0 {
 		todo.Status = 1
 	} else {
 		todo.Status = 0
 	}
 	database.Save(&todo)
-	//db.Close()
-	todos := getAllTodos()
-	c.HTML(http.StatusOK, "index.html", map[string]interface{}{
-		"todos": todos,
-	})
+
+	c.Redirect(http.StatusSeeOther, "/todo")
 }
 
 func main() {
@@ -54,30 +44,35 @@ func main() {
 	r.LoadHTMLFiles("./template/index.html")
 	db.Init()
 
-	todos := getAllTodos()
-
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello World",
 		})
 	})
 
-	r.GET("/todo", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", map[string]interface{}{
-			"todos": todos,
-		})
-	})
-
-	r.POST("/todo", CreateTodoData)
-	r.POST("/done", UpdateDoneTodoData)
+	r.GET("/todo", getAllTodos)
+	r.POST("/todo/store", CreateTodoData)
+	r.POST("/status/:Id", UpdateDoneTodoData)
+	r.POST("/delete/:Id", deleteTodo)
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-	//db.Close()
 }
 
-func getAllTodos() []models.Todo {
+func getAllTodos(c *gin.Context) {
 	database := db.GetDB()
-	//defer database.Close()
 	var todos []models.Todo
 	database.Order("created_at desc").Find(&todos)
-	return todos
+
+	c.HTML(http.StatusOK, "index.html", map[string]interface{}{
+		"todos": todos,
+	})
+}
+
+func deleteTodo(c *gin.Context) {
+	id := c.Param("Id")
+
+	var todo models.Todo
+	database := db.GetDB()
+	database.First(&todo, id)
+	database.Delete(&todo)
+	c.Redirect(http.StatusSeeOther, "/todo")
 }

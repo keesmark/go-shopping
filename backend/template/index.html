@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<form action="/todo" method="post">
+<form action="/todo/store" method="post">
     <label for="content">内容</label>
     <input id="content" type="text" name="content">
     <label for="inCharge">担当</label>
@@ -19,15 +19,17 @@
         担当：{{.InCharge}}
         内容: {{.Content}}
         ステータス:
-        <form action="/done" method="post">
-            <input type="hidden" name="id" value="{{.Id}}">
-            <input type="hidden" name="status" value="{{.Status}}">
+        <form action="/status/{{.Id}}" method="post">
             {{ if eq .Status 0 }}
             未着手 <input type="submit" value="Done">
             {{else}}
             着手済み
             <input type="submit" value="restore">
             {{end}}
+        </form>
+        削除:
+        <form action="/delete/{{.Id}}" method="post">
+            <input type="submit" value="delete">
         </form>
     </li>
     {{end}}
