@@ -6,3 +6,5 @@ api:
 	docker exec -it api sh
 run:
 	docker exec -i api go run main.go
+down:
+	docker-compose down
