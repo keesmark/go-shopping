@@ -2,19 +2,35 @@ version: '3.6'
 
 services:
   api:
-    container_name: api
+    container_name: go_api
     build:
       context: .
       dockerfile: ./backend/Dockerfile
     ports:
-      - 8080:8080
+      - "8080:8080"
     tty:
       true
     volumes:
-      - ./backend:/app
+      - ./backend:/src
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx
+    depends_on:
+      - api
+    container_name: go_nginx
+    ports:
+      - "80:80"
+    environment:
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./backend/docker/nginx/default.conf:/etc/nginx/nginx.conf
+      - ./backend:/src
+      - ./frontend:/app
 
   db:
-    container_name: db
+    container_name: go_db
     image: mysql:8.0
     environment:
       MYSQL_DATABASE: go
@@ -25,3 +41,15 @@ services:
       - "./mysql:/var/lib/mysql"
     ports:
       - "3306:3306"
+
+  front:
+    container_name: go_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    tty:
+      true
+    volumes:
+      - ./frontend:/app

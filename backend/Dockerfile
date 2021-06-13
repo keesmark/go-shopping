@@ -1,8 +1,8 @@
 FROM golang:1.16.4-alpine
 
-COPY . /app
+COPY . /src
 
-WORKDIR /app
+WORKDIR /src
 
 RUN apk update \
   && apk add --no-cache git \
