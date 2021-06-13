@@ -1,14 +1,14 @@
-package db
+package database
 
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"go-shopping/models"
+	"go-shopping/application/model"
 )
 
 var (
-	db  *gorm.DB
-	err error
+	db *gorm.DB
+	_  error
 )
 
 func Init() {
@@ -33,14 +33,14 @@ func gormConnect() *gorm.DB {
 	PASS := "password"
 	DBNAME := "go"
 	CONNECT := USER + ":" + PASS + "@tcp(db:3306)/" + DBNAME + "?parseTime=true"
-	db, err := gorm.Open(DBMS, CONNECT)
+	database, err := gorm.Open(DBMS, CONNECT)
 
 	if err != nil {
 		panic(err.Error())
 	}
-	return db
+	return database
 }
 
 func autoMigration() {
-	db.AutoMigrate(&models.Todo{})
+	db.AutoMigrate(&model.Todo{})
 }
