@@ -8,19 +8,25 @@ import (
 func InitRouter() {
 	r := gin.Default()
 
-	todoController := controller.TodoController{}
-	r.GET("/", func(c *gin.Context) {
-		todoController.GetAllTodos(c)
-	})
-	r.POST("/todo/store", func(c *gin.Context) {
-		todoController.CreateTodo(c)
-	})
-	r.POST("/status/:id", func(c *gin.Context) {
-		todoController.UpdateDoneTodoData(c)
-	})
-	r.POST("/delete/:id", func(c *gin.Context) {
-		todoController.DeleteTodo(c)
-	})
+	userController := controller.UserController{}
+	api := r.Group("/api")
+	{
+		user := api.Group("/users")
+		{
+			user.GET("/", func(c *gin.Context) {
+				userController.GetUsers(c)
+			})
+			user.POST("/create", func(c *gin.Context) {
+				userController.CreateUser(c)
+			})
+			user.POST("/:id/update", func(c *gin.Context) {
+				userController.UpdateUser(c)
+			})
+			user.POST("/:id/delete", func(c *gin.Context) {
+				userController.DeleteUser(c)
+			})
+		}
+	}
 	err := r.Run()
 	if err != nil {
 		return

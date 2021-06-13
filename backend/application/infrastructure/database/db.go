@@ -42,5 +42,5 @@ func gormConnect() *gorm.DB {
 }
 
 func autoMigration() {
-	db.AutoMigrate(&model.Todo{})
+	db.AutoMigrate(&model.User{})
 }
